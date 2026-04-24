@@ -1,0 +1,1367 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INFINITE Prospector ♾️</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #07070f;
+  --surface: #0d0d1a;
+  --surface2: #12121f;
+  --surface3: #181828;
+  --gold: #c9a96e;
+  --gold2: #e8c98e;
+  --gold-dim: rgba(201,169,110,0.15);
+  --purple: #7c3aed;
+  --purple2: #9f67f5;
+  --text: #f0ede8;
+  --text2: #a09cb0;
+  --text3: #5a5670;
+  --border: rgba(255,255,255,0.07);
+  --border-gold: rgba(201,169,110,0.2);
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #60a5fa;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  color: var(--text);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 2px; }
+
+/* Background */
+.bg-fx {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.2;
+  animation: orbFloat 10s ease-in-out infinite;
+}
+.orb1 { width: 600px; height: 600px; background: #7c3aed; top: -200px; right: -150px; animation-delay: 0s; }
+.orb2 { width: 500px; height: 500px; background: #c9a96e; bottom: -200px; left: -100px; animation-delay: -5s; }
+@keyframes orbFloat {
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(20px,-15px) scale(1.03);}
+  66%{transform:translate(-15px,20px) scale(0.97);}
+}
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(201,169,110,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,169,110,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+}
+
+/* Layout */
+.app-wrap { position: relative; z-index: 1; display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  background: rgba(13,13,26,0.95);
+  backdrop-filter: blur(20px);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+
+.sidebar-logo {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.logo-icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--purple), var(--gold));
+  border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+  flex-shrink: 0;
+}
+
+.logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; letter-spacing: -0.01em; }
+.logo-sub { font-size: 11px; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; }
+
+.sidebar-stats {
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.stat-mini {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+.stat-mini-num { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); line-height: 1; }
+.stat-mini-label { font-size: 10px; color: var(--text3); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.05em; }
+
+.sidebar-nav {
+  padding: 16px 12px;
+  flex: 1;
+}
+.nav-label { font-size: 10px; color: var(--text3); letter-spacing: 0.1em; text-transform: uppercase; padding: 0 12px; margin-bottom: 8px; margin-top: 8px; }
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text2);
+  transition: all 0.15s;
+  text-decoration: none;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active {
+  background: linear-gradient(135deg, rgba(124,58,237,0.15), rgba(201,169,110,0.08));
+  border-color: rgba(124,58,237,0.3);
+  color: var(--text);
+}
+.nav-item.active .nav-icon { color: var(--gold); }
+.nav-icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--purple);
+  color: white;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+}
+.btn-logout {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; padding: 10px 12px;
+  background: none; border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text3); font-size: 13px;
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-logout:hover { border-color: var(--danger); color: var(--danger); background: rgba(248,113,113,0.05); }
+
+/* Mobile toggle */
+.menu-toggle {
+  display: none;
+  position: fixed; top: 16px; left: 16px; z-index: 100;
+  width: 40px; height: 40px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  align-items: center; justify-content: center;
+  font-size: 18px; color: var(--text);
+}
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(0,0,0,0.5);
+}
+
+/* Main content */
+.main { flex: 1; min-width: 0; }
+
+/* Pages */
+.page { display: none; padding: 32px; max-width: 900px; }
+.page.active { display: block; }
+
+/* Page header */
+.page-header { margin-bottom: 32px; }
+.page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; letter-spacing: -0.02em; color: var(--text); margin-bottom: 4px; }
+.page-subtitle { font-size: 14px; color: var(--text2); }
+
+/* Search card */
+.search-card {
+  background: rgba(13,13,26,0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+.search-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.search-label {
+  font-size: 12px; color: var(--text3);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.search-row {
+  display: flex; gap: 12px;
+}
+
+.search-input {
+  flex: 1;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  transition: all 0.25s;
+}
+.search-input:focus {
+  border-color: var(--gold);
+  background: rgba(201,169,110,0.04);
+  box-shadow: 0 0 0 3px rgba(201,169,110,0.06);
+}
+.search-input::placeholder { color: var(--text3); }
+
+.btn-analyze {
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 28px;
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+  position: relative;
+  overflow: hidden;
+}
+.btn-analyze:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,58,237,0.5); }
+.btn-analyze:active { transform: translateY(0); }
+.btn-analyze:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Progress */
+.progress-wrap { display: none; margin-top: 24px; }
+.progress-wrap.active { display: block; }
+
+.steps-flow {
+  display: flex; gap: 0; align-items: center;
+  margin-bottom: 16px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.step-item {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 6px; flex: 1; min-width: 80px;
+}
+
+.step-dot-wrap {
+  position: relative;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  transition: all 0.4s;
+  z-index: 1;
+}
+
+.step-item.active .step-dot-wrap {
+  border-color: var(--purple);
+  background: rgba(124,58,237,0.2);
+  box-shadow: 0 0 0 4px rgba(124,58,237,0.1);
+  animation: stepPulse 1.2s ease-in-out infinite;
+}
+.step-item.done .step-dot-wrap {
+  border-color: var(--success);
+  background: rgba(74,222,128,0.15);
+  color: var(--success);
+}
+@keyframes stepPulse {
+  0%,100%{box-shadow:0 0 0 4px rgba(124,58,237,0.1);}
+  50%{box-shadow:0 0 0 8px rgba(124,58,237,0.05);}
+}
+
+.step-connector {
+  flex: 1; height: 2px;
+  background: var(--border);
+  margin-top: -16px;
+}
+.step-connector.done { background: var(--success); }
+
+.step-name { font-size: 10px; color: var(--text3); text-align: center; white-space: nowrap; }
+.step-item.active .step-name { color: var(--purple2); }
+.step-item.done .step-name { color: var(--success); }
+
+.progress-msg {
+  font-size: 13px; color: var(--text2);
+  display: flex; align-items: center; gap: 8px;
+}
+.pulse-dot {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulseDot 1s ease-in-out infinite;
+}
+@keyframes pulseDot {
+  0%,100%{opacity:1;transform:scale(1);}
+  50%{opacity:0.4;transform:scale(0.6);}
+}
+
+/* Insufficient banner */
+.insuf-banner {
+  display: none;
+  background: rgba(251,191,36,0.08);
+  border: 1px solid rgba(251,191,36,0.3);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-top: 16px;
+}
+.insuf-banner.visible { display: block; animation: fadeIn 0.3s ease; }
+.insuf-title { font-size: 14px; font-weight: 500; color: var(--warning); margin-bottom: 6px; }
+.insuf-desc { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+.insuf-actions { display: flex; gap: 8px; }
+.btn-sm {
+  padding: 7px 16px; border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 500; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface2);
+  color: var(--text); transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-sm:hover { background: var(--surface3); }
+.btn-sm.danger { border-color: rgba(248,113,113,0.3); color: var(--danger); }
+.btn-sm.danger:hover { background: rgba(248,113,113,0.08); }
+
+/* Result area */
+.result-area { display: none; animation: fadeIn 0.4s ease; }
+.result-area.visible { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(12px);} to{opacity:1;transform:translateY(0);} }
+
+/* Score header */
+.score-header {
+  background: rgba(13,13,26,0.8);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.score-header::after {
+  content: '';
+  position: absolute;
+  right: -40px; top: -40px;
+  width: 160px; height: 160px;
+  background: radial-gradient(circle, rgba(201,169,110,0.08), transparent 70%);
+  pointer-events: none;
+}
+
+.score-ring {
+  position: relative;
+  flex-shrink: 0;
+}
+.score-ring svg { transform: rotate(-90deg); }
+.score-ring-num {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.score-big { font-family: 'Syne', sans-serif; font-size: 26px; font-weight: 800; color: var(--text); line-height: 1; }
+.score-of { font-size: 10px; color: var(--text3); text-transform: uppercase; }
+
+.score-info { flex: 1; }
+.score-company { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.score-domain { font-size: 13px; color: var(--text3); margin-bottom: 10px; }
+.score-reason { font-size: 13px; color: var(--text2); line-height: 1.6; }
+
+.score-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 500;
+  margin-top: 8px;
+}
+.badge-high { background: rgba(74,222,128,0.12); color: var(--success); border: 1px solid rgba(74,222,128,0.25); }
+.badge-mid { background: rgba(251,191,36,0.1); color: var(--warning); border: 1px solid rgba(251,191,36,0.25); }
+.badge-low { background: rgba(248,113,113,0.1); color: var(--danger); border: 1px solid rgba(248,113,113,0.2); }
+
+/* Tabs */
+.tabs-wrap { margin-bottom: 24px; }
+.tabs-row {
+  display: flex; gap: 0;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 4px;
+  overflow-x: auto;
+}
+.tab-btn {
+  flex: 1; min-width: fit-content;
+  padding: 9px 16px;
+  border: none; background: none;
+  border-radius: calc(var(--radius) - 4px);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 400;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  background: var(--surface3);
+  color: var(--text);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.25s ease; }
+
+/* Platforms */
+.platforms-grid {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 24px;
+}
+.plat-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 500;
+  border: 1px solid;
+}
+.plat-found { background: rgba(74,222,128,0.08); color: var(--success); border-color: rgba(74,222,128,0.25); }
+.plat-missing { background: rgba(248,113,113,0.08); color: var(--danger); border-color: rgba(248,113,113,0.2); }
+.plat-partial { background: rgba(251,191,36,0.08); color: var(--warning); border-color: rgba(251,191,36,0.2); }
+
+/* Findings */
+.findings-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.finding-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  transition: transform 0.2s;
+}
+.finding-card:hover { transform: translateY(-2px); }
+.finding-card.problem { border-left: 3px solid var(--danger); }
+.finding-card.positive { border-left: 3px solid var(--success); }
+.finding-type { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.finding-card.problem .finding-type { color: var(--danger); }
+.finding-card.positive .finding-type { color: var(--success); }
+.finding-card.sev-mare .finding-type::after { content: ' ●●●'; }
+.finding-card.sev-medie .finding-type::after { content: ' ●●'; }
+.finding-card.sev-mica .finding-type::after { content: ' ●'; }
+.finding-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+.finding-desc { font-size: 12px; color: var(--text2); line-height: 1.6; }
+
+/* Website details */
+.website-detail-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 16px;
+}
+.detail-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-key { color: var(--text2); }
+.detail-val { font-weight: 500; color: var(--text); }
+.badge-ok { color: var(--success); }
+.badge-warn { color: var(--warning); }
+.badge-bad { color: var(--danger); }
+
+/* Services */
+.services-list { display: flex; flex-direction: column; gap: 10px; }
+.service-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex; align-items: center; gap: 16px;
+  transition: all 0.2s;
+}
+.service-card:hover { border-color: var(--border-gold); transform: translateX(3px); }
+.service-icon { font-size: 20px; flex-shrink: 0; }
+.service-info { flex: 1; }
+.service-name { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 3px; }
+.service-why { font-size: 12px; color: var(--text2); }
+.service-price {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: var(--gold);
+  white-space: nowrap; flex-shrink: 0;
+}
+
+.total-estimate {
+  background: linear-gradient(135deg, rgba(124,58,237,0.08), rgba(201,169,110,0.05));
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  margin-top: 16px;
+  font-size: 13px; color: var(--text2);
+  line-height: 1.6;
+}
+
+/* Reviews */
+.reviews-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-top: 16px;
+}
+.review-stars { font-size: 22px; margin-bottom: 8px; }
+.review-meta { font-size: 13px; color: var(--text2); margin-bottom: 12px; }
+.review-sentiment { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+/* Message tab */
+.msg-platform-row { display: flex; gap: 8px; margin-bottom: 16px; }
+.plat-toggle {
+  padding: 8px 18px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: none; color: var(--text2);
+  font-size: 13px; cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.plat-toggle.active {
+  background: var(--surface2);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+
+.msg-textarea {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; line-height: 1.8;
+  color: var(--text);
+  resize: vertical;
+  min-height: 300px;
+  outline: none;
+  transition: border-color 0.25s;
+}
+.msg-textarea:focus { border-color: var(--border-gold); }
+
+.msg-actions { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+.btn-send {
+  background: linear-gradient(135deg, var(--purple), var(--purple2));
+  border: none; border-radius: var(--radius);
+  padding: 13px 28px;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  color: white; cursor: pointer;
+  transition: all 0.25s;
+  box-shadow: 0 4px 16px rgba(124,58,237,0.3);
+}
+.btn-send:hover { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(124,58,237,0.5); }
+
+.btn-copy {
+  border: 1px solid var(--border-gold);
+  background: none; border-radius: var(--radius);
+  padding: 13px 24px;
+  font-size: 13px; color: var(--gold);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-copy:hover { background: rgba(201,169,110,0.08); }
+
+.btn-cancel-msg {
+  border: 1px solid var(--border);
+  background: none; border-radius: var(--radius);
+  padding: 13px 20px;
+  font-size: 13px; color: var(--text2);
+  cursor: pointer; transition: all 0.15s;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-cancel-msg:hover { border-color: var(--danger); color: var(--danger); }
+
+/* Database page */
+.db-toolbar {
+  display: flex; gap: 10px; flex-wrap: wrap;
+  margin-bottom: 20px; align-items: center;
+}
+.db-search {
+  flex: 1; min-width: 180px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+}
+.db-search:focus { border-color: var(--border-gold); }
+.db-filter {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--text);
+  outline: none; cursor: pointer;
+}
+.db-filter option { background: var(--surface2); }
+
+.prospects-list { display: flex; flex-direction: column; gap: 10px; }
+.prospect-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.prospect-card:hover { border-color: var(--border-gold); }
+.prospect-header {
+  display: flex; align-items: center; gap: 14px;
+  padding: 16px 20px; cursor: pointer;
+}
+.prospect-score-badge {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 800;
+  flex-shrink: 0;
+  border: 2px solid;
+}
+.score-high-b { border-color: var(--success); color: var(--success); background: rgba(74,222,128,0.08); }
+.score-mid-b { border-color: var(--warning); color: var(--warning); background: rgba(251,191,36,0.08); }
+.score-low-b { border-color: var(--danger); color: var(--danger); background: rgba(248,113,113,0.08); }
+.prospect-name-area { flex: 1; }
+.prospect-name { font-size: 15px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+.prospect-meta { font-size: 12px; color: var(--text3); }
+.prospect-date { font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+.status-select {
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 11px; font-weight: 500;
+  color: var(--text2); cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  outline: none;
+}
+
+.prospect-body {
+  display: none;
+  padding: 16px 20px;
+  border-top: 1px solid var(--border);
+  animation: fadeIn 0.2s ease;
+}
+.prospect-body.open { display: block; }
+.note-input-field {
+  width: 100%;
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px; color: var(--text);
+  outline: none; transition: border-color 0.2s;
+  margin-bottom: 12px;
+}
+.note-input-field:focus { border-color: var(--border-gold); }
+.prospect-actions { display: flex; gap: 8px; }
+.btn-view-msg, .btn-delete-p {
+  padding: 6px 14px; border-radius: var(--radius-sm);
+  font-size: 12px; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: all 0.15s;
+}
+.btn-view-msg { background: rgba(124,58,237,0.1); border: 1px solid rgba(124,58,237,0.3); color: var(--purple2); }
+.btn-view-msg:hover { background: rgba(124,58,237,0.2); }
+.btn-delete-p { background: none; border: 1px solid var(--border); color: var(--text3); }
+.btn-delete-p:hover { border-color: var(--danger); color: var(--danger); background: rgba(248,113,113,0.05); }
+
+.empty-state {
+  text-align: center; padding: 60px 20px;
+  color: var(--text3); font-size: 14px;
+}
+.empty-icon { font-size: 40px; margin-bottom: 12px; opacity: 0.4; }
+
+/* Stats page */
+.stats-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 14px; margin-bottom: 28px;
+}
+.stat-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: all 0.2s;
+}
+.stat-card:hover { border-color: var(--border-gold); transform: translateY(-2px); }
+.stat-card-num { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.stat-card-label { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+.stat-card-sub { font-size: 13px; color: var(--text2); margin-top: 8px; }
+
+.status-chart {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+}
+.status-bar-item { margin-bottom: 14px; }
+.status-bar-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text2); margin-bottom: 6px; }
+.status-bar-track { height: 6px; background: var(--surface3); border-radius: 3px; overflow: hidden; }
+.status-bar-fill { height: 100%; border-radius: 3px; transition: width 0.8s cubic-bezier(0.16,1,0.3,1); }
+
+/* Toast */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 999;
+  background: var(--surface2);
+  border: 1px solid var(--border-gold);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  font-size: 13px; color: var(--text);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  opacity: 0; pointer-events: none;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+}
+.toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+/* Section label */
+.section-lbl {
+  font-size: 11px; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.08em;
+  margin-bottom: 12px; margin-top: 24px;
+}
+.section-lbl:first-child { margin-top: 0; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar { position: fixed; left: 0; top: 0; bottom: 0; z-index: 50; transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .sidebar-overlay.show { display: block; }
+  .menu-toggle { display: flex; }
+  .page { padding: 70px 20px 40px; }
+  .findings-grid { grid-template-columns: 1fr; }
+  .search-row { flex-direction: column; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+  .score-header { flex-direction: column; text-align: center; }
+}
+</style>
+</head>
+<body>
+<div class="bg-fx">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+</div>
+<div class="bg-grid"></div>
+
+<button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+<div class="app-wrap">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">♾️</div>
+        <div>
+          <div class="logo-text">INFINITE</div>
+          <div class="logo-sub">Prospector Agent</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-stats" id="sidebarStats">
+      <div class="stat-mini"><div class="stat-mini-num" id="statTotal">0</div><div class="stat-mini-label">Total</div></div>
+      <div class="stat-mini"><div class="stat-mini-num" id="statClients">0</div><div class="stat-mini-label">Clienți</div></div>
+      <div class="stat-mini"><div class="stat-mini-num" id="statAvgScore">0</div><div class="stat-mini-label">Scor mediu</div></div>
+      <div class="stat-mini"><div class="stat-mini-num" id="statPending">0</div><div class="stat-mini-label">În așteptare</div></div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-label">Agent</div>
+      <div class="nav-item active" onclick="showPage('analyze', this)"><span class="nav-icon">🔍</span> Analizează firmă</div>
+      <div class="nav-label">Date</div>
+      <div class="nav-item" onclick="showPage('database', this)"><span class="nav-icon">📋</span> Baza de date <span class="nav-badge" id="navBadge">0</span></div>
+      <div class="nav-item" onclick="showPage('stats', this)"><span class="nav-icon">📊</span> Statistici</div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="logout()">⎋ &nbsp;Deconectare</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- ANALYZE PAGE -->
+    <div class="page active" id="page-analyze">
+      <div class="page-header">
+        <div class="page-title">Analizează o firmă</div>
+        <div class="page-subtitle">Introdu numele sau linkul firmei — agentul caută și analizează tot automat</div>
+      </div>
+
+      <div class="search-card">
+        <div class="search-label">Firmă de prospectat</div>
+        <div class="search-row">
+          <input type="text" class="search-input" id="firmInput" placeholder="ex: Salon Beauty Suceava sau https://facebook.com/..." onkeydown="if(event.key==='Enter') startAnalysis()" />
+          <button class="btn-analyze" id="analyzeBtn" onclick="startAnalysis()">⚡ Analizează</button>
+        </div>
+
+        <div class="progress-wrap" id="progressWrap">
+          <div class="steps-flow" id="stepsFlow"></div>
+          <div class="progress-msg"><div class="pulse-dot"></div><span id="progressMsg">Inițializare...</span></div>
+        </div>
+
+        <div class="insuf-banner" id="insufBanner">
+          <div class="insuf-title">⚠️ Date insuficiente găsite</div>
+          <div class="insuf-desc">Agentul nu a reușit să colecteze suficiente informații despre această firmă pentru o analiză completă și precisă.</div>
+          <div class="insuf-actions">
+            <button class="btn-sm" onclick="continueAnyway()">Continuă cu ce are</button>
+            <button class="btn-sm danger" onclick="cancelAnalysis()">Renunță</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-area" id="resultArea">
+        <div class="score-header" id="scoreHeader"></div>
+
+        <div class="tabs-wrap">
+          <div class="tabs-row">
+            <button class="tab-btn active" onclick="switchTab('analysis', this)">🔍 Analiză</button>
+            <button class="tab-btn" onclick="switchTab('website', this)">🌐 Website & SEO</button>
+            <button class="tab-btn" onclick="switchTab('offer', this)">💼 Servicii</button>
+            <button class="tab-btn" onclick="switchTab('message', this)">✉️ Mesaj</button>
+          </div>
+        </div>
+
+        <div class="tab-content active" id="tab-analysis">
+          <div class="section-lbl">Prezență pe platforme</div>
+          <div class="platforms-grid" id="platformsGrid"></div>
+          <div class="section-lbl">Probleme identificate</div>
+          <div class="findings-grid" id="problemsGrid"></div>
+          <div class="section-lbl">Puncte bune</div>
+          <div class="findings-grid" id="positivesGrid"></div>
+        </div>
+
+        <div class="tab-content" id="tab-website">
+          <div class="section-lbl">Detalii website & SEO</div>
+          <div id="websiteDetails"></div>
+          <div class="section-lbl" style="margin-top:20px">Recenzii Google</div>
+          <div id="reviewsSection"></div>
+        </div>
+
+        <div class="tab-content" id="tab-offer">
+          <div class="section-lbl">Servicii recomandate</div>
+          <div class="services-list" id="servicesList"></div>
+          <div class="total-estimate" id="totalEstimate"></div>
+        </div>
+
+        <div class="tab-content" id="tab-message">
+          <div class="section-lbl">Platformă de trimitere</div>
+          <div class="msg-platform-row">
+            <button class="plat-toggle active" onclick="selectPlatform('WhatsApp', this)">💬 WhatsApp</button>
+            <button class="plat-toggle" onclick="selectPlatform('Facebook Messenger', this)">📘 Messenger</button>
+          </div>
+          <div class="section-lbl">Mesaj pregătit — editabil direct</div>
+          <textarea class="msg-textarea" id="msgTextarea" placeholder="Mesajul va apărea aici după analiză..."></textarea>
+          <div class="msg-actions">
+            <button class="btn-send" onclick="sendMsg()">Trimite pe <span id="platLabel">WhatsApp</span> ↗</button>
+            <button class="btn-copy" onclick="copyMsg()">📋 Copiază</button>
+            <button class="btn-cancel-msg" onclick="cancelMsg()">✕ Anulează</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATABASE PAGE -->
+    <div class="page" id="page-database">
+      <div class="page-header">
+        <div class="page-title">Baza de date</div>
+        <div class="page-subtitle">Toate firmele analizate, cu status și note</div>
+      </div>
+      <div class="db-toolbar">
+        <input type="text" class="db-search" placeholder="🔍 Caută firmă..." oninput="loadProspects()" id="dbSearch" />
+        <select class="db-filter" id="dbFilter" onchange="loadProspects()">
+          <option value="all">Toate statusurile</option>
+          <option value="necontactat">Necontactat</option>
+          <option value="trimis">Mesaj trimis</option>
+          <option value="negociere">În negociere</option>
+          <option value="client">Client</option>
+          <option value="respins">Respins</option>
+        </select>
+      </div>
+      <div class="prospects-list" id="prospectsList"></div>
+    </div>
+
+    <!-- STATS PAGE -->
+    <div class="page" id="page-stats">
+      <div class="page-header">
+        <div class="page-title">Statistici</div>
+        <div class="page-subtitle">Performanța prospectării INFINITE Studio</div>
+      </div>
+      <div class="stats-grid" id="statsGrid"></div>
+      <div class="status-chart" id="statusChart"></div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const STEPS = [
+  { id: 's1', name: 'Căutare web', icon: '🔍' },
+  { id: 's2', name: 'Social media', icon: '📱' },
+  { id: 's3', name: 'Website & SEO', icon: '🌐' },
+  { id: 's4', name: 'Recenzii', icon: '⭐' },
+  { id: 's5', name: 'Analiză AI', icon: '🧠' },
+  { id: 's6', name: 'Mesaj', icon: '✉️' }
+];
+
+const STEP_MSGS = [
+  'Se caută firma pe Google, Facebook, Instagram...',
+  'Se analizează activitatea pe social media...',
+  'Se verifică website-ul, viteza și SEO-ul...',
+  'Se citesc recenziile clienților pe Google...',
+  'Agentul AI procesează toate datele găsite...',
+  'Se redactează mesajul personalizat...'
+];
+
+let currentData = null;
+let selectedPlatform = 'WhatsApp';
+
+function toast(msg, dur = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), dur);
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'database') loadProspects();
+  if (name === 'stats') loadStats();
+  if (window.innerWidth <= 768) toggleSidebar();
+}
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function selectPlatform(p, btn) {
+  selectedPlatform = p;
+  document.querySelectorAll('.plat-toggle').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('platLabel').textContent = p;
+}
+
+function buildSteps() {
+  const flow = document.getElementById('stepsFlow');
+  flow.innerHTML = '';
+  STEPS.forEach((s, i) => {
+    const item = document.createElement('div');
+    item.className = 'step-item';
+    item.id = s.id;
+    item.innerHTML = `<div class="step-dot-wrap">${s.icon}</div><div class="step-name">${s.name}</div>`;
+    flow.appendChild(item);
+    if (i < STEPS.length - 1) {
+      const conn = document.createElement('div');
+      conn.className = 'step-connector';
+      conn.id = 'conn-' + i;
+      flow.appendChild(conn);
+    }
+  });
+}
+
+async function startAnalysis() {
+  const input = document.getElementById('firmInput').value.trim();
+  if (!input) return;
+
+  document.getElementById('analyzeBtn').disabled = true;
+  document.getElementById('progressWrap').classList.add('active');
+  document.getElementById('resultArea').classList.remove('visible');
+  document.getElementById('insufBanner').classList.remove('visible');
+
+  buildSteps();
+
+  for (let i = 0; i < STEPS.length; i++) {
+    document.getElementById(STEPS[i].id).className = 'step-item active';
+    document.getElementById('progressMsg').textContent = STEP_MSGS[i];
+    await new Promise(r => setTimeout(r, i < 4 ? 1000 : 800));
+    document.getElementById(STEPS[i].id).className = 'step-item done';
+    if (i < STEPS.length - 1) document.getElementById('conn-' + i).classList.add('done');
+  }
+
+  document.getElementById('progressMsg').textContent = 'Se finalizează analiza...';
+
+  try {
+    const resp = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ input })
+    });
+    const result = await resp.json();
+
+    document.getElementById('progressWrap').classList.remove('active');
+
+    if (!resp.ok) {
+      toast('Eroare: ' + (result.error || 'Server error'));
+      document.getElementById('analyzeBtn').disabled = false;
+      return;
+    }
+
+    if (result.insufficient) {
+      currentData = result;
+      document.getElementById('insufBanner').classList.add('visible');
+      document.getElementById('analyzeBtn').disabled = false;
+      return;
+    }
+
+    currentData = result;
+    renderResults(result);
+    loadSidebarStats();
+
+  } catch(err) {
+    document.getElementById('progressWrap').classList.remove('active');
+    toast('Eroare conexiune server.');
+    document.getElementById('analyzeBtn').disabled = false;
+  }
+}
+
+function continueAnyway() {
+  document.getElementById('insufBanner').classList.remove('visible');
+  if (currentData) renderResults(currentData);
+}
+
+function cancelAnalysis() {
+  document.getElementById('insufBanner').classList.remove('visible');
+  document.getElementById('analyzeBtn').disabled = false;
+  currentData = null;
+}
+
+function renderResults(r) {
+  document.getElementById('analyzeBtn').disabled = false;
+  document.getElementById('resultArea').classList.add('visible');
+
+  const score = parseInt(r.score) || 5;
+  const scoreColor = score >= 7 ? '#4ade80' : score >= 4 ? '#fbbf24' : '#f87171';
+  const circumference = 2 * Math.PI * 36;
+  const filled = (score / 10) * circumference;
+
+  document.getElementById('scoreHeader').innerHTML = `
+    <div class="score-ring">
+      <svg width="80" height="80" viewBox="0 0 80 80">
+        <circle cx="40" cy="40" r="36" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="5"/>
+        <circle cx="40" cy="40" r="36" fill="none" stroke="${scoreColor}" stroke-width="5"
+          stroke-dasharray="${filled} ${circumference}" stroke-linecap="round"
+          style="transition: stroke-dasharray 1s cubic-bezier(0.16,1,0.3,1)"/>
+      </svg>
+      <div class="score-ring-num">
+        <span class="score-big">${score}</span>
+        <span class="score-of">/10</span>
+      </div>
+    </div>
+    <div class="score-info">
+      <div class="score-company">${r.companyName || 'Firmă analizată'}</div>
+      <div class="score-domain">${r.domain || ''}</div>
+      <div class="score-reason">${r.scoreReason || ''}</div>
+      ${r.reviews && r.reviews.score ? `<div style="font-size:12px;color:var(--text3);margin-top:6px">⭐ ${r.reviews.score} · ${r.reviews.count} recenzii Google</div>` : ''}
+      <span class="score-badge ${score >= 7 ? 'badge-high' : score >= 4 ? 'badge-mid' : 'badge-low'}">
+        ${score >= 7 ? '🟢 Potențial ridicat' : score >= 4 ? '🟡 Potențial mediu' : '🔴 Potențial scăzut'}
+      </span>
+    </div>`;
+
+  const platMap = { website: '🌐 Website', facebook: '📘 Facebook', instagram: '📷 Instagram', tiktok: '🎵 TikTok', googleBusiness: '📍 Google Business', metaAds: '📣 Meta Ads' };
+  let platHtml = '';
+  if (r.platforms) {
+    Object.entries(r.platforms).forEach(([k, v]) => {
+      const cls = v === 'found' ? 'plat-found' : v === 'partial' ? 'plat-partial' : 'plat-missing';
+      const icon = v === 'found' ? '✓' : v === 'partial' ? '~' : '✗';
+      platHtml += `<div class="plat-pill ${cls}">${icon} ${platMap[k] || k}</div>`;
+    });
+  }
+  document.getElementById('platformsGrid').innerHTML = platHtml || '<p style="color:var(--text3);font-size:13px">Nu s-au putut detecta platformele.</p>';
+
+  let probHtml = '';
+  (r.problems || []).forEach(p => {
+    const sevClass = p.severity === 'mare' ? 'sev-mare' : p.severity === 'medie' ? 'sev-medie' : 'sev-mica';
+    probHtml += `<div class="finding-card problem ${sevClass}">
+      <div class="finding-type">Problemă · ${p.severity || 'medie'}</div>
+      <div class="finding-title">${p.title}</div>
+      <div class="finding-desc">${p.desc}</div>
+    </div>`;
+  });
+  document.getElementById('problemsGrid').innerHTML = probHtml || '<p style="color:var(--text3);font-size:13px">Nicio problemă majoră identificată.</p>';
+
+  let posHtml = '';
+  (r.positives || []).forEach(p => {
+    posHtml += `<div class="finding-card positive">
+      <div class="finding-type">Punct bun</div>
+      <div class="finding-title">${p.title}</div>
+      <div class="finding-desc">${p.desc}</div>
+    </div>`;
+  });
+  document.getElementById('positivesGrid').innerHTML = posHtml || '<p style="color:var(--text3);font-size:13px">Nu s-au identificat puncte pozitive notabile.</p>';
+
+  const wd = r.websiteDetails || {};
+  document.getElementById('websiteDetails').innerHTML = wd.url ? `
+    <div class="website-detail-card">
+      <div class="detail-row"><span class="detail-key">URL detectat</span><span class="detail-val"><a href="${wd.url}" target="_blank" style="color:var(--gold);text-decoration:none">${wd.url}</a></span></div>
+      <div class="detail-row"><span class="detail-key">Viteză estimată</span><span class="detail-val ${wd.speed === 'rapid' ? 'badge-ok' : wd.speed === 'lent' ? 'badge-bad' : 'badge-warn'}">${wd.speed || 'necunoscut'}</span></div>
+      <div class="detail-row"><span class="detail-key">SEO general</span><span class="detail-val ${wd.seoScore === 'bun' ? 'badge-ok' : wd.seoScore === 'slab' ? 'badge-bad' : 'badge-warn'}">${wd.seoScore || 'necunoscut'}</span></div>
+      ${(wd.seoIssues || []).length ? `<div class="detail-row"><span class="detail-key">Probleme SEO</span><span class="detail-val badge-bad">${wd.seoIssues.join(', ')}</span></div>` : ''}
+      ${(wd.missingContent || []).length ? `<div class="detail-row"><span class="detail-key">Conținut lipsă</span><span class="detail-val badge-warn">${wd.missingContent.join(', ')}</span></div>` : ''}
+    </div>` : '<p style="color:var(--text3);font-size:13px;padding:16px 0">Website nedetectat sau indisponibil.</p>';
+
+  const rev = r.reviews || {};
+  document.getElementById('reviewsSection').innerHTML = rev.score ? `
+    <div class="reviews-card">
+      <div class="review-stars">${'⭐'.repeat(Math.round(parseFloat(rev.score)))}</div>
+      <div class="review-meta">${rev.score} / 5 · ${rev.count} recenzii · ${rev.ownerResponds ? '✓ Proprietarul răspunde' : '✗ Proprietarul nu răspunde'}</div>
+      <div class="review-sentiment">${rev.sentiment}</div>
+    </div>` : '<p style="color:var(--text3);font-size:13px;padding:16px 0">Nu s-au găsit recenzii Google.</p>';
+
+  const svcIcons = { 'Brand': '🎨', 'Website': '🌐', 'Landing': '🎯', 'Social': '📱', 'Content': '📅', 'Reels': '🎬', 'Meta': '📣', 'Google': '🔍', 'Audit': '🔎', 'Consul': '💡', 'Funnel': '🔀', 'Design': '✏️' };
+  let svcHtml = '';
+  (r.recommendedServices || []).forEach(s => {
+    const iconKey = Object.keys(svcIcons).find(k => s.name.includes(k)) || 'Social';
+    svcHtml += `<div class="service-card">
+      <div class="service-icon">${svcIcons[iconKey]}</div>
+      <div class="service-info">
+        <div class="service-name">${s.name}</div>
+        <div class="service-why">${s.why}</div>
+      </div>
+      <div class="service-price">${s.price}</div>
+    </div>`;
+  });
+  document.getElementById('servicesList').innerHTML = svcHtml || '<p style="color:var(--text3);font-size:13px">Fără recomandări specifice.</p>';
+  document.getElementById('totalEstimate').innerHTML = `<strong style="color:var(--gold)">Estimare pachet:</strong> ${r.estimatedTotal || 'Se stabilește după discuție directă cu clientul.'} · Prețurile finale se negociază personalizat.`;
+
+  document.getElementById('msgTextarea').value = r.message || '';
+}
+
+function sendMsg() {
+  const msg = document.getElementById('msgTextarea').value;
+  if (!msg.trim()) return;
+  if (currentData && currentData.dbId) {
+    fetch('/api/prospects/' + currentData.dbId, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'trimis' })
+    });
+  }
+  if (selectedPlatform === 'WhatsApp') {
+    window.open('https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+  } else {
+    navigator.clipboard.writeText(msg).then(() => toast('Mesaj copiat! Deschide Messenger și lipește-l.'));
+  }
+  toast('Status actualizat → Mesaj trimis');
+  loadSidebarStats();
+}
+
+function copyMsg() {
+  const msg = document.getElementById('msgTextarea').value;
+  navigator.clipboard.writeText(msg).then(() => toast('✓ Mesaj copiat în clipboard'));
+}
+
+function cancelMsg() {
+  document.getElementById('msgTextarea').value = '';
+  toast('Mesaj anulat.');
+}
+
+async function loadProspects() {
+  const search = document.getElementById('dbSearch').value;
+  const status = document.getElementById('dbFilter').value;
+  const params = new URLSearchParams({ status, search });
+  const data = await fetch('/api/prospects?' + params).then(r => r.json());
+  const container = document.getElementById('prospectsList');
+  if (!data.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div>Nicio firmă în baza de date momentan.</div>';
+    return;
+  }
+  const statusColors = { necontactat: '#60a5fa', trimis: '#fbbf24', negociere: '#a78bfa', client: '#4ade80', respins: '#f87171' };
+  container.innerHTML = data.map(p => {
+    const sc = parseInt(p.score);
+    const scoreCls = sc >= 7 ? 'score-high-b' : sc >= 4 ? 'score-mid-b' : 'score-low-b';
+    return `<div class="prospect-card">
+      <div class="prospect-header" onclick="toggleProspect(${p.id})">
+        <div class="prospect-score-badge ${scoreCls}">${p.score}</div>
+        <div class="prospect-name-area">
+          <div class="prospect-name">${p.company_name}</div>
+          <div class="prospect-meta">${p.domain || ''} · ${p.created_at ? p.created_at.split('T')[0] : ''}</div>
+        </div>
+        <select class="status-select" onchange="updateStatus(${p.id}, this.value)" onclick="event.stopPropagation()">
+          ${['necontactat','trimis','negociere','client','respins'].map(s => `<option value="${s}" ${p.status===s?'selected':''} style="color:${statusColors[s]||'inherit'}">${s.charAt(0).toUpperCase()+s.slice(1)}</option>`).join('')}
+        </select>
+        <div class="prospect-date">${p.created_at ? p.created_at.split('T')[0] : ''}</div>
+      </div>
+      <div class="prospect-body" id="body-${p.id}">
+        <input class="note-input-field" value="${p.note || ''}" placeholder="Notă personală (ex: Am vorbit cu proprietarul, revenim în mai...)" onblur="updateNote(${p.id}, this.value)" />
+        <div class="prospect-actions">
+          <button class="btn-view-msg" onclick="viewMessage(${p.id})">📩 Vezi mesajul</button>
+          <button class="btn-delete-p" onclick="deleteProspect(${p.id})">🗑 Șterge</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('navBadge').textContent = data.length;
+}
+
+function toggleProspect(id) {
+  const body = document.getElementById('body-' + id);
+  body.classList.toggle('open');
+}
+
+function viewMessage(id) {
+  fetch('/api/prospects?status=all').then(r => r.json()).then(data => {
+    const p = data.find(x => x.id === id);
+    if (p && p.message) {
+      showPage('analyze', document.querySelector('.nav-item'));
+      document.getElementById('msgTextarea').value = p.message;
+      document.getElementById('resultArea').classList.add('visible');
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab-btn')[3].classList.add('active');
+      document.getElementById('tab-message').classList.add('active');
+    }
+  });
+}
+
+async function updateStatus(id, status) {
+  await fetch('/api/prospects/' + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  toast('Status actualizat → ' + status);
+  loadSidebarStats();
+}
+
+async function updateNote(id, note) {
+  await fetch('/api/prospects/' + id, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ note })
+  });
+}
+
+async function deleteProspect(id) {
+  if (!confirm('Ștergi această firmă din baza de date?')) return;
+  await fetch('/api/prospects/' + id, { method: 'DELETE' });
+  toast('Firmă ștearsă.');
+  loadProspects();
+  loadSidebarStats();
+}
+
+async function loadStats() {
+  const stats = await fetch('/api/stats').then(r => r.json());
+  const byStatus = {};
+  (stats.byStatus || []).forEach(s => byStatus[s.status] = s.c);
+  document.getElementById('statsGrid').innerHTML = `
+    <div class="stat-card"><div class="stat-card-num">${stats.total}</div><div class="stat-card-label">Firme analizate</div></div>
+    <div class="stat-card"><div class="stat-card-num">${byStatus.client || 0}</div><div class="stat-card-label">Clienți câștigați</div></div>
+    <div class="stat-card"><div class="stat-card-num">${stats.avgScore}</div><div class="stat-card-label">Scor mediu</div><div class="stat-card-sub">din 10 posibil</div></div>
+    <div class="stat-card"><div class="stat-card-num">${byStatus.negociere || 0}</div><div class="stat-card-label">În negociere</div></div>`;
+
+  const total = stats.total || 1;
+  const colors = { necontactat: '#60a5fa', trimis: '#fbbf24', negociere: '#a78bfa', client: '#4ade80', respins: '#f87171' };
+  const labels = { necontactat: 'Necontactat', trimis: 'Mesaj trimis', negociere: 'În negociere', client: 'Client', respins: 'Respins' };
+  document.getElementById('statusChart').innerHTML = '<div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:20px">Distribuție după status</div>' +
+    Object.entries(labels).map(([k, label]) => {
+      const count = byStatus[k] || 0;
+      const pct = Math.round((count / total) * 100);
+      return `<div class="status-bar-item">
+        <div class="status-bar-label"><span>${label}</span><span style="color:var(--text3)">${count} firme · ${pct}%</span></div>
+        <div class="status-bar-track"><div class="status-bar-fill" style="width:${pct}%;background:${colors[k]}"></div></div>
+      </div>`;
+    }).join('');
+}
+
+async function loadSidebarStats() {
+  const stats = await fetch('/api/stats').then(r => r.json());
+  const byStatus = {};
+  (stats.byStatus || []).forEach(s => byStatus[s.status] = s.c);
+  document.getElementById('statTotal').textContent = stats.total || 0;
+  document.getElementById('statClients').textContent = byStatus.client || 0;
+  document.getElementById('statAvgScore').textContent = stats.avgScore || 0;
+  document.getElementById('statPending').textContent = (byStatus.trimis || 0) + (byStatus.negociere || 0);
+  document.getElementById('navBadge').textContent = stats.total || 0;
+}
+
+async function logout() {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/';
+}
+
+loadSidebarStats();
+</script>
+</body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INFINITE Prospector — Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080810;
+    --surface: #0f0f1a;
+    --gold: #c9a96e;
+    --gold2: #e8c98e;
+    --purple: #7c3aed;
+    --purple-soft: #a78bfa;
+    --text: #f0ede8;
+    --muted: #6b6780;
+    --border: rgba(201,169,110,0.15);
+  }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    overflow: hidden;
+  }
+
+  /* Animated background */
+  .bg-canvas {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.35;
+    animation: float 8s ease-in-out infinite;
+  }
+  .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, #7c3aed, transparent); top: -150px; right: -100px; animation-delay: 0s; }
+  .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #c9a96e, transparent); bottom: -100px; left: -100px; animation-delay: -3s; }
+  .orb3 { width: 300px; height: 300px; background: radial-gradient(circle, #4f46e5, transparent); top: 40%; left: 30%; animation-delay: -6s; }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+  }
+
+  /* Grid overlay */
+  .bg-grid {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(201,169,110,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,169,110,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+
+  /* Main */
+  .login-wrap {
+    position: relative;
+    z-index: 10;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .login-card {
+    width: 100%;
+    max-width: 420px;
+    background: rgba(15, 15, 26, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    box-shadow: 0 0 60px rgba(124, 58, 237, 0.15), 0 0 120px rgba(201, 169, 110, 0.05);
+    animation: cardIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .logo-area {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .infinity-icon {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #7c3aed, #c9a96e);
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin: 0 auto 16px;
+    box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4);
+    animation: iconPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes iconPulse {
+    0%, 100% { box-shadow: 0 8px 32px rgba(124, 58, 237, 0.4); }
+    50% { box-shadow: 0 8px 48px rgba(124, 58, 237, 0.7), 0 0 0 8px rgba(124,58,237,0.08); }
+  }
+
+  .logo-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 24px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--text), var(--gold));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+  }
+
+  .logo-sub {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .input-group {
+    margin-bottom: 20px;
+  }
+
+  .input-label {
+    display: block;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .input-field {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    outline: none;
+    transition: all 0.25s;
+  }
+
+  .input-field:focus {
+    border-color: rgba(201,169,110,0.6);
+    background: rgba(201,169,110,0.05);
+    box-shadow: 0 0 0 3px rgba(201,169,110,0.08);
+  }
+
+  .input-field::placeholder { color: var(--muted); }
+
+  .btn-login {
+    width: 100%;
+    background: linear-gradient(135deg, #7c3aed, #9f67f5);
+    border: none;
+    border-radius: 12px;
+    padding: 15px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all 0.25s;
+    letter-spacing: 0.02em;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn-login::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  .btn-login:hover::before { opacity: 1; }
+  .btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(124, 58, 237, 0.5); }
+  .btn-login:active { transform: translateY(0); }
+
+  .error-msg {
+    display: none;
+    background: rgba(224, 85, 85, 0.1);
+    border: 1px solid rgba(224,85,85,0.3);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: #fc8181;
+    margin-top: 14px;
+    text-align: center;
+    animation: shake 0.3s ease;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  .spinner {
+    display: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+</style>
+</head>
+<body>
+<div class="bg-canvas">
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+<div class="bg-grid"></div>
+
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="logo-area">
+      <div class="infinity-icon">♾️</div>
+      <div class="logo-title">INFINITE Prospector</div>
+      <div class="logo-sub">Agent AI · INFINITE Studio</div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label">Parolă de acces</label>
+      <input type="password" class="input-field" id="passwordInput" placeholder="Introdu parola..." onkeydown="if(event.key==='Enter') login()" autofocus />
+    </div>
+
+    <button class="btn-login" id="loginBtn" onclick="login()">
+      <span id="btnText">Intră în agent</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+
+    <div class="error-msg" id="errorMsg">Parolă incorectă. Încearcă din nou.</div>
+  </div>
+</div>
+
+<script>
+async function login() {
+  const pass = document.getElementById('passwordInput').value;
+  if (!pass) return;
+
+  document.getElementById('btnText').style.display = 'none';
+  document.getElementById('spinner').style.display = 'block';
+  document.getElementById('loginBtn').disabled = true;
+
+  try {
+    const r = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password: pass })
+    });
+    if (r.ok) {
+      window.location.href = '/';
+    } else {
+      document.getElementById('errorMsg').style.display = 'block';
+      document.getElementById('btnText').style.display = 'block';
+      document.getElementById('spinner').style.display = 'none';
+      document.getElementById('loginBtn').disabled = false;
+    }
+  } catch(e) {
+    document.getElementById('btnText').style.display = 'block';
+    document.getElementById('spinner').style.display = 'none';
+    document.getElementById('loginBtn').disabled = false;
+  }
+}
+</script>
+</body>
+</html>
